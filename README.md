@@ -60,77 +60,6 @@ Endpoints principales (base `/api`):
 - Resumen: `GET /api/resumen/{usuarioId}`
   - Retorna totalIngresos, totalGastos, balance
 
-Ejemplos JSON (usar con curl o Postman):
-
-- Crear usuario:
-
-```json
-{
-  "nombre": "Juan Perez",
-  "email": "juan@example.com",
-  "password": "secret",
-  "telefono": "123456789"
-}
-```
-
-- Crear cuenta:
-
-```json
-{
-  "usuarioId": 1,
-  "nombre": "Cuenta Ahorros",
-  "tipo": "Ahorros",
-  "saldo": 500.00
-}
-```
-
-- Crear categoria:
-
-```json
-{
-  "nombre": "Sueldo",
-  "tipo": "NECESIDAD"
-}
-```
-
-- Crear transaccion (INGRESO):
-
-```json
-{
-  "cuentaId": 1,
-  "categoriaId": 1,
-  "monto": 1000.00,
-  "tipo": "INGRESO",
-  "tipoMovimiento": "DEPOSITO",
-  "descripcion": "Pago salario"
-}
-```
-
-- Crear transaccion (GASTO):
-
-```json
-{
-  "cuentaId": 1,
-  "categoriaId": 2,
-  "monto": 50.00,
-  "tipo": "GASTO",
-  "tipoMovimiento": "PAGO",
-  "descripcion": "Compra supermercado"
-}
-```
-
-- Crear meta:
-
-```json
-{
-  "usuarioId": 1,
-  "nombre": "Viaje",
-  "montoObjetivo": 2000.00,
-  "montoActual": 100.00,
-  "fechaLimite": "2026-12-31"
-}
-```
-
 Resumen usuario:
 
 GET http://localhost:8080/api/resumen/1
@@ -257,3 +186,7 @@ finanzas-mi-patito/
 - Cobertura de código: **≥ 80%** (JUnit 5)
 - Precisión de cálculos presupuestarios: **100%**
 - Seguridad: encriptación de contraseñas + validación de tokens JWT
+
+---
+
+Última actualización: 2026-04-30
