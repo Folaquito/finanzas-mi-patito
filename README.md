@@ -8,7 +8,7 @@ Aplicación web de gestión de finanzas personales con implementación automáti
 |--------|-----|--------|
 | Agustín Bahamondes | Product Owner / Analista | [@AbsolucionArtistica](https://github.com/AbsolucionArtistica) |
 | Joaquín Fernández | Frontend Developer (React) | [@Folaquito](https://github.com/Folaquito) |
-| Diego Bahamondez | Backend Developer (Spring Boot) | — |
+| Diego Bahamondez | Backend Developer (Spring Boot) | [Eth3rn4l](https://github.com/Eth3rn4l) |
 
 **Profesor:** Diego Patricio Cares Gonzalez  
 **Asignatura:** Taller Aplicado de Programación 801D — Duoc UC  
