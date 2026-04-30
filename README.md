@@ -1,3 +1,144 @@
+# Finanzas Mi Patito - Backend
+
+Proyecto Spring Boot (Java 17, Spring Boot 3, Maven) con H2 en memoria.
+
+Requisitos locales:
+- Java 17+
+- Maven 3.6+
+
+Config y ejecución:
+
+1) Compilar:
+
+```powershell
+mvn -DskipTests package
+```
+
+2) Ejecutar:
+
+```powershell
+mvn spring-boot:run
+```
+
+La consola H2 estará disponible en: http://localhost:8080/h2-console (URL JDBC: jdbc:h2:mem:finanzas_db)
+
+Endpoints principales (base `/api`):
+
+- Usuarios: `/api/usuarios`
+  - POST crear
+  - GET listar
+  - GET /{id}
+  - PUT /{id}
+  - DELETE /{id}
+
+- Cuentas: `/api/cuentas`
+  - POST crear
+  - GET listar
+  - GET /{id}
+  - GET /usuario/{usuarioId}
+  - PUT /{id}
+  - DELETE /{id}
+
+- Categorias: `/api/categorias`
+  - CRUD básico
+
+- Transacciones: `/api/transacciones`
+  - POST crear
+  - GET listar
+  - GET /{id}
+  - GET /cuenta/{cuentaId}
+  - PUT /{id}
+  - DELETE /{id}
+
+- Metas: `/api/metas`
+  - POST crear
+  - GET /usuario/{usuarioId}
+  - GET /{id}
+  - PUT /{id}
+  - DELETE /{id}
+
+- Resumen: `GET /api/resumen/{usuarioId}`
+  - Retorna totalIngresos, totalGastos, balance
+
+Ejemplos JSON (usar con curl o Postman):
+
+- Crear usuario:
+
+```json
+{
+  "nombre": "Juan Perez",
+  "email": "juan@example.com",
+  "password": "secret",
+  "telefono": "123456789"
+}
+```
+
+- Crear cuenta:
+
+```json
+{
+  "usuarioId": 1,
+  "nombre": "Cuenta Ahorros",
+  "tipo": "Ahorros",
+  "saldo": 500.00
+}
+```
+
+- Crear categoria:
+
+```json
+{
+  "nombre": "Sueldo",
+  "tipo": "NECESIDAD"
+}
+```
+
+- Crear transaccion (INGRESO):
+
+```json
+{
+  "cuentaId": 1,
+  "categoriaId": 1,
+  "monto": 1000.00,
+  "tipo": "INGRESO",
+  "tipoMovimiento": "DEPOSITO",
+  "descripcion": "Pago salario"
+}
+```
+
+- Crear transaccion (GASTO):
+
+```json
+{
+  "cuentaId": 1,
+  "categoriaId": 2,
+  "monto": 50.00,
+  "tipo": "GASTO",
+  "tipoMovimiento": "PAGO",
+  "descripcion": "Compra supermercado"
+}
+```
+
+- Crear meta:
+
+```json
+{
+  "usuarioId": 1,
+  "nombre": "Viaje",
+  "montoObjetivo": 2000.00,
+  "montoActual": 100.00,
+  "fechaLimite": "2026-12-31"
+}
+```
+
+Resumen usuario:
+
+GET http://localhost:8080/api/resumen/1
+
+Notas:
+- Las contraseñas se guardan encriptadas con BCrypt al crear usuarios.
+- Spring Security está configurado para permitir todos los endpoints (sin autenticación por ahora).
+- Si no tienes Maven instalado en tu máquina, instala Maven y Java 17 y luego ejecuta los comandos de arriba.
 # Finanzas Mi Patito 🐣
 
 Aplicación web de gestión de finanzas personales con implementación automática de la regla **50/30/20** y proyecciones de ahorro.
