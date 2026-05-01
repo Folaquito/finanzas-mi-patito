@@ -116,3 +116,9 @@ finanzas-mi-patito/
 - Cobertura de código: **≥ 80%** (JUnit 5)
 - Precisión de cálculos presupuestarios: **100%**
 - Seguridad: encriptación de contraseñas + validación de tokens JWT
+
+---
+
+## Modelo Base de Datos
+<img width="533" height="525" alt="image" src="https://github.com/user-attachments/assets/51f6342c-2443-411a-be95-8af6bd2a4502" />
+
