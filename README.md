@@ -190,3 +190,6 @@ finanzas-mi-patito/
 ---
 
 Última actualización: 2026-04-30
+## Modelo Base de Datos
+<img width="533" height="525" alt="image" src="https://github.com/user-attachments/assets/51f6342c-2443-411a-be95-8af6bd2a4502" />
+
