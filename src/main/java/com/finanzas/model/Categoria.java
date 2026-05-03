@@ -17,10 +17,10 @@ public class Categoria {
     private TipoCategoria tipo;
 
     // getters and setters
-    public Long getId() { return id; }
+    public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
-    public String getNombre() { return nombre; }
+    public String getNombre() { return this.nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-    public TipoCategoria getTipo() { return tipo; }
+    public TipoCategoria getTipo() { return this.tipo; }
     public void setTipo(TipoCategoria tipo) { this.tipo = tipo; }
 }

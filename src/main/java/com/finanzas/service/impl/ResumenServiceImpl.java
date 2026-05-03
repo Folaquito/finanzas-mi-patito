@@ -29,13 +29,13 @@ public class ResumenServiceImpl implements ResumenService {
 
     @Override
     public ResumenDTO resumenPorUsuario(Long usuarioId) {
-        usuarioRepository.findById(usuarioId).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        List<Cuenta> cuentas = cuentaRepository.findByUsuarioId(usuarioId);
+        this.usuarioRepository.findById(usuarioId).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        List<Cuenta> cuentas = this.cuentaRepository.findByUsuarioId(usuarioId);
         BigDecimal totalIngresos = BigDecimal.ZERO;
         BigDecimal totalGastos = BigDecimal.ZERO;
 
         for (Cuenta c : cuentas) {
-            List<Transaccion> trans = transaccionRepository.findByCuentaId(c.getId());
+            List<Transaccion> trans = this.transaccionRepository.findByCuentaId(c.getId());
             for (Transaccion t : trans) {
                 if (t.getTipo() == TipoTransaccion.INGRESO) totalIngresos = totalIngresos.add(t.getMonto());
                 else if (t.getTipo() == TipoTransaccion.GASTO) totalGastos = totalGastos.add(t.getMonto());

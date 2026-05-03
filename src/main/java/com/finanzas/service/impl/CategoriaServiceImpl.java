@@ -15,22 +15,22 @@ public class CategoriaServiceImpl implements CategoriaService {
     public CategoriaServiceImpl(CategoriaRepository categoriaRepository) { this.categoriaRepository = categoriaRepository; }
 
     @Override
-    public Categoria create(Categoria categoria) { return categoriaRepository.save(categoria); }
+    public Categoria create(Categoria categoria) { return this.categoriaRepository.save(categoria); }
 
     @Override
     public Categoria update(Long id, Categoria categoria) {
-        Categoria c = categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"));
+        Categoria c = this.categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"));
         c.setNombre(categoria.getNombre());
         c.setTipo(categoria.getTipo());
-        return categoriaRepository.save(c);
+        return this.categoriaRepository.save(c);
     }
 
     @Override
-    public void delete(Long id) { categoriaRepository.delete(categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"))); }
+    public void delete(Long id) { this.categoriaRepository.delete(this.categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"))); }
 
     @Override
-    public Categoria getById(Long id) { return categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada")); }
+    public Categoria getById(Long id) { return this.categoriaRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada")); }
 
     @Override
-    public List<Categoria> getAll() { return categoriaRepository.findAll(); }
+    public List<Categoria> getAll() { return this.categoriaRepository.findAll(); }
 }
