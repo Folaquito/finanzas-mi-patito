@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Wireframes v2 — Finanzas Mi Patito</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      background: #FAFAF7;
+      font-family: 'Kalam', cursive;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    .app { max-width: 1280px; margin: 0 auto; padding: 28px 24px 60px; }
+    .header { margin-bottom: 18px; }
+    .header h1 {
+      font-family: 'Caveat', cursive;
+      font-size: 40px; margin: 0; font-weight: 700; line-height: 1;
+    }
+    .header p { font-size: 14px; color: #555; margin: 4px 0 0; max-width: 640px; }
+    .tabs { display: flex; gap: 10px; margin: 22px 0 18px; align-items: flex-end; }
+    .tab {
+      border: 2px solid #1a1a1a; background: #fff;
+      padding: 8px 18px; font-family: 'Caveat', cursive;
+      font-size: 22px; font-weight: 700; cursor: pointer;
+      border-radius: 6px 6px 0 0; border-bottom: none;
+      position: relative; top: 2px; box-shadow: 2px -2px 0 #1a1a1a;
+    }
+    .tab.active { background: #FF8A3D; top: 0; padding-bottom: 10px; }
+    .tab:hover:not(.active) { background: #ffe6d0; }
+    .frame-title {
+      font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .frame-title .desc { font-family: 'Kalam'; font-size: 12px; color: #777; margin-left: 8px; font-weight: 400; }
+    .browser-wrap { display: flex; justify-content: center; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel" src="landing-variants.jsx"></script>
+<script type="text/babel" src="dashboard-variants.jsx"></script>
+<script type="text/babel" src="refined-v2.jsx"></script>
+<script type="text/babel" src="browser-window.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function loadTab() {
+  try { return localStorage.getItem('fmp_v2_tab') || 'landing'; } catch { return 'landing'; }
+}
+
+function App() {
+  const [tab, setTab] = useState(loadTab());
+  useEffect(() => { try { localStorage.setItem('fmp_v2_tab', tab); } catch {} }, [tab]);
+
+  const isDash = tab === 'dashboard';
+  const w = isDash ? 1100 : 960;
+  const h = isDash ? 720 : 600;
+
+  return (
+    <div className="app" data-screen-label={isDash ? '02 Dashboard Holgura' : '01 Landing Refinado'}>
+      <div className="header">
+        <h1>Ronda 2 — refinamiento 🐣</h1>
+        <p>
+          <strong>Landing:</strong> mezcla del hero dividido (V1) con la evolución del huevito (V4).<br/>
+          <strong>Dashboard:</strong> nuevo enfoque tipo "flujo del mes con holgura" (inspirado en tu referencia), conectado a la base de datos real (cuentas, categorías, transacciones, metas).
+        </p>
+      </div>
+
+      <div className="tabs" role="tablist">
+        <button className={'tab' + (!isDash ? ' active' : '')}
+          onClick={() => setTab('landing')}>01 · Landing refinado</button>
+        <button className={'tab' + (isDash ? ' active' : '')}
+          onClick={() => setTab('dashboard')}>02 · Dashboard "Holgura del mes"</button>
+      </div>
+
+      <div className="frame-title">
+        {isDash
+          ? <>Dashboard · flujo del mes <span className="desc">— hero con holgura, regla 50/30/20, cuentas, metas y movimientos</span></>
+          : <>Landing · primera impresión <span className="desc">— hero dividido + evolución del patito + auth</span></>
+        }
+      </div>
+
+      <div className="browser-wrap">
+        <ChromeWindow
+          width={w} height={h}
+          tabs={[{ title: 'Finanzas Mi Patito' }]}
+          url={isDash ? 'app.mipatito.cl/inicio' : 'mipatito.cl'}
+        >
+          {isDash ? <DashboardHolgura/> : <LandingRefined/>}
+        </ChromeWindow>
+      </div>
+
+      <div style={{
+        marginTop: 30, padding: 18, border: '2px dashed #c9c9c4',
+        borderRadius: 8, background: '#fff', maxWidth: 900, margin: '30px auto 0',
+      }}>
+        <div style={{ fontFamily: 'Caveat', fontSize: 24, fontWeight: 700, marginBottom: 6 }}>
+          Notas de esta ronda →
+        </div>
+        <ul style={{ fontFamily: 'Kalam', fontSize: 13, color: '#444', margin: 0, paddingLeft: 20, lineHeight: 1.6 }}>
+          <li><strong>Landing:</strong> hero dividido conserva el form de auth (V1) y suma la tira de evolución del patito (V4) abajo del CTA.</li>
+          <li><strong>Dashboard:</strong> reemplazo la dona por una <em>barra de flujo horizontal</em> tipo tu referencia, con número grande de "holgura" arriba.</li>
+          <li><strong>Datos reales:</strong> uso las tablas <code>cuentas</code>, <code>metas</code>, <code>transacciones</code> con sus campos (tipo, categoría NECESIDAD/DESEO/AHORRO, etc.).</li>
+          <li>¿Quieres que sumemos las pantallas de <em>movimientos</em> (con filtros por categoría/banco) y <em>metas</em> (detalle + crear meta) en una próxima ronda?</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+</body>
+</html>

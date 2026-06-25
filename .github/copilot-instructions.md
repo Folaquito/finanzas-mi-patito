@@ -1,281 +1,322 @@
-# GitHub Copilot — Finanzas Mi Patito 🐣
+# Copilot — Finanzas Mi Patito 🐣
 
-## Contexto del proyecto
-
-**Asignatura:** Taller Aplicado de Programación 801D — Duoc UC, 2026
-**Profesor:** Diego Patricio Cares Gonzalez
-**Metodología:** Scrum con sprints semanales
-
-### Equipo y roles
-
-| Nombre             | Rol                      | GitHub                                                         | Responsabilidad técnica                                          |
-| ------------------ | ------------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Agustín Bahamondes | Product Owner / Analista | [@AbsolucionArtistica](https://github.com/AbsolucionArtistica) | Requerimientos, modelo de datos, validación de reglas de negocio |
-| Joaquín Fernández  | Frontend Developer       | [@Folaquito](https://github.com/Folaquito)                     | React SPA, consumo de APIs, UX                                   |
-| Diego Bahamondez   | Backend Developer        | [@Eth3rn4l](https://github.com/Eth3rn4l)                       | Microservicios Spring Boot, persistencia, seguridad JWT          |
-
-Cuando el código toque responsabilidad de otro miembro, Copilot debe sugerir **comentar el cambio en el PR** para review explícita del owner correspondiente.
-
-### Dominio del problema
-
-Finanzas Mi Patito es una plataforma web de **finanzas personales con educación financiera activa**:
-
-- **Regla 50/30/20:** 50% necesidades, 30% deseos, 20% ahorro/inversión.
-- **Presupuesto Base Cero (PBZ):** cada peso del ingreso debe tener un destino asignado.
-- **Proyecciones de ahorro:** gráficos de crecimiento patrimonial basados en histórico.
-- **Centralización de movimientos:** historial consolidado de transacciones (datos simulados o CSV, **NO integración bancaria real**).
-
-**Fuera de alcance del proyecto:** integración con APIs bancarias reales, app móvil nativa, multi-moneda, multi-idioma.
+> **Cómo se usa este archivo:** Copilot lo lee automáticamente al iniciar cada sesión. Define cómo debe comportarse el agente en este repo. Para el **estado vivo** del proyecto (qué está hecho y qué no), Copilot debe consultar `docs/progress/STATUS.md`. Para decisiones arquitectónicas tomadas, `docs/progress/DECISIONS.md`. Para registrar cambios después de iterar, `docs/progress/CHANGELOG.md`.
 
 ---
 
-## Stack tecnológico (decidido)
+## PARTE A — Guidelines de comportamiento
 
-| Capa         | Tecnología                                     | Versión esperada             |
-| ------------ | ---------------------------------------------- | ---------------------------- |
-| Frontend     | React (SPA) + Vite                             | React 18.x, Vite 5.x         |
-| Backend      | Java + Spring Boot (microservicios)            | Java 21 LTS, Spring Boot 3.x |
-| Persistencia | Spring Data JPA + H2 (dev) / PostgreSQL (prod) | H2 2.x, PostgreSQL 16        |
-| Seguridad    | Spring Security + JWT                          | jjwt 0.12.x                  |
-| Testing      | JUnit 5 + Mockito (backend)                    | JUnit Jupiter 5.x            |
-| Build        | Maven con wrapper (`./mvnw`)                   | Maven 3.9+                   |
-| Versionado   | Git + GitHub                                   | —                            |
+Reducen errores comunes de LLMs al programar. **Sesgan hacia precaución sobre velocidad.** Para tareas triviales, usa juicio.
 
-**Dependencias prohibidas sin acuerdo de equipo:**
+### 1. Pensar antes de codear
 
-- Lombok (decisión a discutir: simplifica POJOs pero oculta lógica generada).
-- Bibliotecas de gráficos pesadas en frontend antes de prototipar con CSS/SVG nativo.
-- ORMs alternativos a JPA (MyBatis, jOOQ).
+**No asumas. No escondas la confusión. Saca los tradeoffs a la luz.**
+
+Antes de implementar:
+
+- Enuncia tus suposiciones explícitamente. Si dudas, pregunta.
+- Si existen múltiples interpretaciones, preséntales — no elijas en silencio.
+- Si existe un enfoque más simple, dilo. Empuja para atrás cuando corresponda.
+- Si algo no está claro, detente. Nombra qué es confuso. Pregunta.
+
+### 2. Simplicidad primero
+
+**El mínimo de código que resuelve el problema. Nada especulativo.**
+
+- No agregues features más allá de lo pedido.
+- No crees abstracciones para código de un solo uso.
+- No agregues "flexibilidad" o "configurabilidad" no solicitada.
+- No manejes errores para escenarios imposibles.
+- Si escribiste 200 líneas y podían ser 50, reescríbelo.
+
+Pregúntate: _"¿Un senior diría que esto está sobrecomplicado?"_ Si sí, simplifica.
+
+### 3. Cambios quirúrgicos
+
+**Toca solo lo que debes. Limpia solo tu propio desorden.**
+
+Al editar código existente:
+
+- No "mejores" código, comentarios o formato adyacentes.
+- No refactorices cosas que no están rotas.
+- Iguala el estilo existente, aunque lo harías distinto.
+- Si notas dead code no relacionado, menciónalo — no lo borres.
+
+Cuando tus cambios creen huérfanos:
+
+- Elimina imports/variables/funciones que **tus** cambios dejaron sin uso.
+- No borres dead code preexistente salvo que te lo pidan.
+
+**La prueba:** cada línea cambiada debe trazarse directamente al pedido del usuario.
+
+### 4. Ejecución guiada por objetivo
+
+**Define criterios de éxito. Itera hasta verificar.**
+
+Transforma tareas en metas verificables:
+
+- "Agrega validación" → "Escribe tests para inputs inválidos, luego hazlos pasar"
+- "Arregla el bug" → "Escribe un test que lo reproduzca, luego hazlo pasar"
+- "Refactoriza X" → "Asegura que los tests pasen antes y después"
+
+Para tareas multi-paso, enuncia un plan breve:
+
+```
+1. [Paso] → verificar: [check]
+2. [Paso] → verificar: [check]
+3. [Paso] → verificar: [check]
+```
+
+Criterios fuertes permiten iterar de forma independiente. Criterios débiles ("que funcione") requieren clarificación constante.
+
+**Estas guidelines funcionan si:** menos cambios innecesarios en diffs, menos rewrites por sobrecomplicación, y las preguntas aclaratorias llegan **antes** de implementar, no después de equivocarse.
 
 ---
 
-## Arquitectura objetivo (3 microservicios)
+## PARTE B — Contexto del proyecto
 
-Según el README, el backend se divide en tres microservicios:
+### Asignatura y equipo
 
-```
-backend/src/main/java/cl/duoc/finanzas/
-├── auth/          → Autenticación, gestión de usuarios, JWT
-├── transactions/  → CRUD de movimientos, importación CSV
-└── budget/        → Reglas 50/30/20, PBZ, proyecciones
-```
+- **Asignatura:** TPY1101 Taller Aplicado de Programación 801D, Duoc UC, 2026-1
+- **Profesor:** Diego Patricio Cares Gonzalez
+- **Metodología:** Scrum, sprints semanales
 
-**Decisiones arquitectónicas pendientes** (NO las asumas, Copilot debe preguntar):
+| Nombre             | GitHub                                                         | Rol                | Owner técnico de                                |
+| ------------------ | -------------------------------------------------------------- | ------------------ | ----------------------------------------------- |
+| Agustín Bahamondes | [@AbsolucionArtistica](https://github.com/AbsolucionArtistica) | PO / Analista      | Modelo de datos, reglas de negocio              |
+| Joaquín Fernández  | [@Folaquito](https://github.com/Folaquito)                     | Frontend Developer | Frontend (cuando exista), UX, integraciones API |
+| Diego Bahamondez   | [@Eth3rn4l](https://github.com/Eth3rn4l)                       | Backend Developer  | Spring Boot, persistencia, seguridad            |
 
-- ¿Un único `pom.xml` parent o tres `pom.xml` independientes?
-- ¿Cada microservicio en su propio puerto local (8081, 8082, 8083) o un API Gateway delante?
-- ¿Cada microservicio con su propia base de datos H2/PostgreSQL o una BD compartida?
-- ¿Comunicación inter-servicios via REST síncrono o eventos asíncronos?
-- ¿Service Discovery (Eureka, Consul) o configuración estática de URLs?
+**Regla de ownership:** si tu cambio toca responsabilidad de otro miembro, propón el cambio en el PR y pide review explícita del owner correspondiente.
 
-Si Copilot detecta que se le pide código que requiere alguna de estas decisiones y el repo no las refleja aún, debe preguntar antes de generar.
+### Dominio: Finanzas Mi Patito
 
-### Capa de presentación (React SPA)
+Plataforma web de finanzas personales con educación financiera activa.
 
-```
-frontend/src/
-├── components/    → Componentes UI reutilizables (sin lógica de negocio)
-├── pages/         → Componentes de ruta (Dashboard, Login, Budget, etc.)
-├── services/      → Clientes REST (uno por microservicio)
-├── hooks/         → Custom hooks (useAuth, useTransactions, etc.)
-├── context/       → React Context providers (AuthContext)
-└── utils/         → Helpers puros (formato de moneda CLP, fechas, cálculos)
-```
+**Funcionalidades clave del producto:**
+
+- **Regla 50/30/20** — 50% necesidades, 30% deseos, 20% ahorro/inversión. Distribución automática del ingreso.
+- **Presupuesto Base Cero (PBZ)** — cada peso del ingreso debe tener un destino asignado.
+- **Centralización de movimientos** — historial consolidado de transacciones (datos simulados o CSV importado, **NO integración bancaria real**).
+- **Proyecciones de ahorro** — gráficos de crecimiento patrimonial basados en histórico.
+
+**Fuera de alcance del proyecto:** APIs bancarias reales, app móvil nativa, multi-moneda, multi-idioma.
+
+### Pedido del profesor: arquitectura de microservicios
+
+El profesor pidió **arquitectura de microservicios**. El estado actual del código es un **monolito Spring Boot** porque empezamos a generar código con Copilot sin instructions definidas. Esta brecha es real y debe resolverse antes de EP3 (Estado de avance N°3, semana 15). Ver `docs/progress/DECISIONS.md` para el plan de migración a microservicios.
+
+**Cuando Copilot genere código nuevo:** debe priorizar diseño que facilite la futura separación (paquetes por bounded context, no acoplamiento entre services de distintos dominios, eventos de dominio en lugar de llamadas directas cuando sea razonable).
 
 ---
 
-## Reglas técnicas estrictas
+## PARTE C — Estado actual del repositorio
+
+> **Importante:** la sección detallada y viva está en `docs/progress/STATUS.md`. Esta es solo una vista resumida. Si Copilot necesita detalles, leer ese archivo.
+
+### Lo que existe (monolito Spring Boot, branch `master`)
+
+- **Stack:** Java 21, Spring Boot 3.5.14, Maven (sin wrapper), H2 in-memory.
+- **Ubicación del código:** `backend/` (módulo Maven independiente). El frontend, cuando exista, irá en `frontend/`.
+- **Package base:** `com.finanzas` (NO `cl.duoc.finanzas` como mencionaba la versión anterior de este archivo).
+- **Capas:** `controller → service (interface) → service.impl → repository → model`.
+- **Entidades JPA:** `Usuario`, `Cuenta`, `Categoria`, `Transaccion`, `Meta`.
+- **Enums:** `TipoCategoria` (NECESIDAD, DESEO, AHORRO), `TipoTransaccion` (INGRESO, GASTO), `TipoMovimiento` (TRANSFERENCIA, PAGO, DEPOSITO).
+- **DTOs en `com.finanzas.dto`:** Usuario, Cuenta, Meta, Transaccion, Resumen.
+- **Endpoints (base `/api`):** CRUD de usuarios, cuentas, categorías, transacciones, metas + `GET /api/resumen/{usuarioId}`.
+- **Seed inicial:** `DataLoader` crea `admin@patito.com / password`, una cuenta y una meta.
+- **Manejo de errores:** `@RestControllerAdvice` global en `GlobalExceptionHandler`.
+
+### Lo que NO existe todavía
+
+- **Frontend** (carpeta `frontend/` vacía con `.gitkeep`).
+- **Tests** (sin `src/test/`, cobertura 0%).
+- **JWT / autenticación funcional** — `SecurityConfig` hace `permitAll()`, solo BCrypt para passwords.
+- **Lógica regla 50/30/20** — el enum existe pero no hay servicio que calcule distribución.
+- **Importación CSV** — `Transaccion` tiene campos preparados (bancoOrigen/Destino, etc.) pero no hay endpoint.
+- **Proyecciones de ahorro.**
+- **OpenAPI/Swagger.**
+- **Microservicios** — ver decisión pendiente abajo.
+- **Maven wrapper.**
+- **PostgreSQL para producción** (solo H2 en `application.properties`).
+- **Ownership check** — cualquier llamada puede leer/escribir datos de cualquier usuario (no hay filtro por user autenticado).
+
+### Decisiones tomadas (no las cuestiones sin razón fuerte)
+
+| Decisión                                         | Razón                                                                                                                       |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Package `com.finanzas` (no `cl.duoc.finanzas`)   | Ya está en todo el código, refactor sería costoso                                                                           |
+| Enums en español (`NECESIDAD/DESEO/AHORRO`)      | Coherencia con resto del código y dominio                                                                                   |
+| Lombok declarado en `pom.xml` pero **no se usa** | Pendiente decidir entre quitarlo o adoptarlo. Hoy todas las clases tienen getters/setters manuales. **No mezclar** estilos. |
+| H2 in-memory para dev                            | Simple para iterar, pero **falla IL2.2** del PA (ambiente prueba debe replicar producción)                                  |
+| Inyección por constructor con `final`            | Estándar Spring moderno, ya aplicado                                                                                        |
+
+### Decisiones PENDIENTES (Copilot debe preguntar antes de asumir)
+
+1. **¿Migrar a microservicios o documentar como "monolito modular"?** El profesor pidió microservicios. Ver `DECISIONS.md` para análisis.
+2. **¿Implementar JWT o quedarse con permitAll por ahora?** El README declara JWT, el código no lo tiene.
+3. **¿Lombok sí o no?** Está en `pom.xml` sin uso real.
+4. **¿Frontend con qué stack?** El README dice React + Vite, pero la carpeta está vacía. Decidir antes de empezar.
+5. **¿PostgreSQL para perfil `prod` cuándo?** Sin esto, no se cumple IL2.2.
+6. **¿Comunicación inter-servicios** (si vamos a microservicios): REST síncrono / eventos asíncronos / API Gateway?
+
+---
+
+## PARTE D — Reglas técnicas estrictas
 
 ### Backend (Java + Spring Boot)
 
 - **Arquitectura por capas:** `controller → service → repository → model`. Las capas no se saltan.
-- **Entidades JPA NO se exponen en respuestas REST.** Siempre via DTOs en `dto/request/` y `dto/response/`.
+- **Entidades JPA NO se exponen en respuestas REST.** Siempre vía DTOs.
+  - Excepción actual conocida: `CategoriaController` recibe `Categoria` directo. **No replicar este patrón** en código nuevo. Si tocas categorías, considera migrar a `CategoriaDTO` (registrarlo en `CHANGELOG.md`).
 - **Inyección por constructor con `final`**, nunca `@Autowired` en campos.
 - **Validación con `jakarta.validation`** (`@NotNull`, `@Positive`, `@Email`) en DTOs, no en lógica de servicio.
-- **Excepciones de negocio:** clases custom extendiendo `RuntimeException` con `@ResponseStatus`. Manejadas centralmente con `@RestControllerAdvice`.
-- **Paquete base:** `cl.duoc.finanzas.<microservicio>` (auth, transactions, budget).
+- **Excepciones de negocio:** clases custom extendiendo `RuntimeException`. Manejadas centralmente en `GlobalExceptionHandler`.
 - **Logger:** SLF4J/Logback. **Nunca `System.out.println`** en código de producción.
+- **Money:** `BigDecimal` siempre. **Nunca `double`/`float`** para dinero.
+- **Fechas:** UTC en backend (`Instant` o `OffsetDateTime` para timestamps; `LocalDate` para fechas civiles), zona `America/Santiago` solo en presentación.
 
-### Frontend (React)
+### Frontend (React, cuando exista)
 
-- **Functional components con hooks**, sin class components bajo ninguna circunstancia.
+- **Functional components con hooks**, sin class components.
 - **Estado local:** `useState`. **Estado compartido:** Context API (no Redux para este proyecto).
 - **Llamadas a API en `services/` o custom hooks**, nunca en componentes directamente.
-- **Loading y error states explícitos** en cada llamada async. Nunca asumir que la red funciona.
+- **Loading y error states explícitos** en cada llamada async.
 - **Comillas simples en JS, dobles en JSX** (regla Prettier).
-- **CSS:** módulos CSS o estilos vanilla. Tailwind requiere acuerdo de equipo antes de adoptar.
+- **CSS:** módulos CSS o vanilla. Tailwind requiere acuerdo de equipo.
 
-### Dominio financiero (reglas no negociables)
+### Dominio financiero (no negociable)
 
-- **Moneda:** Pesos chilenos (CLP). **Sin decimales** (Chile no usa centavos en transacciones cotidianas).
-- **Tipo de dato monetario:** `BigDecimal` en Java, `number` con redondeo controlado en JS. **Nunca `double` o `float`** para dinero.
-- **Cálculos 50/30/20:** suman exactamente al 100% del ingreso. Test obligatorio que verifique esto.
-- **Categorización:** enum cerrado en backend (`NEEDS`, `WANTS`, `SAVINGS`), traducido a español solo en la capa de presentación.
-- **Fechas:** UTC en backend (`Instant` o `OffsetDateTime`), zona horaria America/Santiago en frontend.
+- **Moneda:** Pesos chilenos (CLP), **sin decimales** (Chile no usa centavos en transacciones cotidianas).
+- **Cálculos 50/30/20:** suman exactamente al 100% del ingreso. **Test obligatorio** que verifique esto cuando se implemente.
+- **Categorización:** enum cerrado backend. Hoy en español: `NECESIDAD`, `DESEO`, `AHORRO`. La traducción no aplica (ya está en español).
+- **Redondeo:** definir y testear edge cases (ingreso $0, ingreso impar, montos enormes) cuando se implemente la lógica.
 
 ---
 
-## Naming conventions
+## PARTE E — Naming y commits
 
 ### Java / Spring Boot
 
-- Clases en `PascalCase`. Sufijo claro: `UserService`, `TransactionRepository`, `BudgetController`, `LoginRequest`, `BalanceResponse`.
-- Métodos en `camelCase`, verbo en imperativo: `findUserById`, `calculateBudgetDistribution`, `validateTransaction`.
-- Tests: `should_<resultadoEsperado>_when_<condición>()`.
-  - Ejemplo: `should_throwInsufficientBalance_when_amountExceedsAvailable()`.
-- Constantes en `UPPER_SNAKE_CASE`: `MAX_TRANSACTION_AMOUNT`, `DEFAULT_BUDGET_RULE`.
-- Excepciones terminan en `Exception`: `InsufficientBalanceException`, `InvalidBudgetRuleException`.
+- Clases en `PascalCase` con sufijo claro: `UsuarioService`, `TransaccionRepository`, `MetaController`, `CuentaDTO`.
+- Métodos en `camelCase`, verbo en imperativo: `findUsuarioByEmail`, `calcularDistribucionPresupuesto`.
+- **Tests** (cuando existan): `should_<resultadoEsperado>_when_<condicion>()`.
+  - Ejemplo: `should_lanzarSaldoInsuficiente_when_montoExcedeDisponible()`.
+- Constantes en `UPPER_SNAKE_CASE`.
+- Excepciones terminan en `Exception`.
 
-### React / JavaScript
+### React / JavaScript (futuro)
 
-- Componentes en `PascalCase`: `TransactionList`, `BudgetChart`, `LoginForm`.
-- Hooks empiezan con `use`: `useAuth`, `useTransactions`, `useBudgetCalculator`.
-- Servicios REST en `camelCase`: `authService`, `transactionService`, `budgetService`.
-- Variables booleanas: `isAuthenticated`, `hasTransactions`, `canEditBudget`.
+- Componentes en `PascalCase`: `ListaTransacciones`, `GraficoPresupuesto`.
+- Hooks empiezan con `use`: `useAuth`, `useTransacciones`.
+- Servicios REST en `camelCase`: `usuarioService`, `transaccionService`.
+- Booleanas: `estaAutenticado`, `tieneTransacciones`, `puedeEditarPresupuesto`.
 
 ### Git
 
-- Branches: `feature/<descripción-corta>`, `fix/<descripción-corta>`, `docs/<descripción-corta>`.
-  - Ejemplo: `feature/jwt-authentication`, `fix/budget-calculation-rounding`.
-- Commits: Conventional Commits en español (ver sección dedicada abajo).
-
----
-
-## Conventional Commits en español
+- **Branches:** `feature/<descripcion-corta>`, `fix/<descripcion-corta>`, `docs/<descripcion-corta>`, `refactor/<descripcion-corta>`.
+- **Conventional Commits en español:**
 
 ```
 feat: agregar autenticación JWT al microservicio auth
 fix: corregir redondeo en cálculo del 50/30/20 cuando ingreso es impar
-docs: documentar endpoints del microservicio transactions con OpenAPI
-refactor: extraer cálculo de proyección a BudgetProjectionService
-test: agregar pruebas de integración para flujo de login completo
-chore: actualizar Spring Boot de 3.3.5 a 3.4.1
-perf: agregar índice compuesto (user_id, date) en tabla transactions
-build: configurar Dockerfile multi-stage para microservicio auth
+docs: documentar endpoints de transacciones con OpenAPI
+refactor: extraer cálculo de proyección a PresupuestoProyeccionService
+test: agregar pruebas de integración del flujo de login
+chore: actualizar Spring Boot de 3.5.14 a 3.5.15
+perf: agregar índice (cuenta_id, fecha) en transacciones
+build: configurar Dockerfile multi-stage para auth-service
 ```
 
-- Imperativo, presente, sin punto final, máximo 72 caracteres.
-- Si hay breaking change, agregar `BREAKING CHANGE:` en el body.
-- **Un commit, un cambio coherente.** Si describes con "y", probablemente son dos commits.
+- Imperativo, presente, sin punto final, máximo 72 caracteres en el subject.
+- Un commit, un cambio coherente. Si describes con "y", probablemente son dos commits.
+- Squash & merge en `master`.
 
 ---
 
-## Testing
+## PARTE F — Testing
 
-**Cobertura objetivo declarada en README: 80% mínimo (JUnit 5).**
+**Cobertura objetivo:** 80% mínimo (declarada en README, hoy 0% — gap conocido).
 
-- Tests unitarios con Mockito para services y controllers.
-- Tests de integración con `@SpringBootTest` para flujos críticos:
-  - Login completo (POST /auth/login → JWT válido).
-  - Crear transacción autenticada (con JWT en header).
-  - Cálculo de presupuesto 50/30/20 con datos reales.
-- Tests de matemática financiera **obligatorios**: redondeo, sumas exactas, edge cases (ingreso $0, ingreso negativo, montos enormes).
-- Frontend: tests de comportamiento (qué ve el usuario), no de implementación interna.
-- Nunca commitear tests con `@Disabled` o `xit()` sin un comentario `TODO` con razón y fecha.
+Cuando se agreguen tests:
+
+- Unitarios con Mockito para services y controllers.
+- Integración con `@SpringBootTest` para flujos críticos:
+  - Crear usuario → verificar BCrypt aplicado.
+  - Crear transacción → verificar saldo de cuenta actualizado correctamente.
+  - GET resumen → verificar suma correcta de ingresos/gastos.
+- **Tests de matemática financiera obligatorios** cuando se implemente 50/30/20: redondeo, sumas exactas, edge cases.
+- Frontend (cuando exista): tests de comportamiento, no de implementación interna.
+- Nunca commitear tests con `@Disabled` sin un `TODO` con razón y fecha.
 
 ---
 
-## Seguridad
+## PARTE G — Seguridad
 
-- **Contraseñas:** BCrypt con cost factor 12 mínimo. Nunca SHA, nunca texto plano.
-- **JWT:** firmado con HS256 o superior. Secret en variable de entorno, **nunca hardcoded**.
-- **Endpoints públicos:** solo `/auth/login`, `/auth/register`, `/swagger-ui/**`, `/v3/api-docs/**`. Todo lo demás requiere JWT válido.
+- **Contraseñas:** BCrypt con cost factor 10+ (default Spring). Nunca SHA, nunca texto plano. ✅ Ya implementado.
+- **JWT (cuando se implemente):** firmado con HS256 o superior. Secret en variable de entorno, **nunca hardcoded**.
+- **Endpoints públicos** (cuando JWT esté activo): solo `/auth/login`, `/auth/register`, `/swagger-ui/**`, `/v3/api-docs/**`. Todo lo demás requiere JWT válido.
 - **CORS:** configurado solo para el origin del frontend en cada ambiente. Sin `allowedOrigins("*")`.
+- **Ownership check:** todo endpoint que reciba `usuarioId` o `cuentaId` debe verificar que el caller tiene acceso a ese recurso. **Hoy no existe** — gap conocido, registrarlo en `STATUS.md`.
 - **Validación de input:** todo DTO request validado con `@Valid` en el controller.
 - **Logs:** **nunca loguear** contraseñas, tokens JWT, datos personales sensibles.
+- **Secretos:** nunca commitear `.env`, `application-prod.yml` con credenciales. Usar `@Value("${var.name}")` con env vars.
 
 ---
 
-## Secretos y configuración
-
-- **Nunca commitear** `.env`, `application-prod.yml` con credenciales, ni archivos sensibles.
-- Cada microservicio incluye `.env.example` documentando variables requeridas con valores vacíos.
-- Variables de entorno se cargan vía `@Value("${variable.name}")` en Spring o `import.meta.env.VITE_*` en Vite.
-- Si descubres un secreto commiteado por error: avisa **inmediatamente** al equipo, rota la credencial, limpia el historial con `git filter-repo`. **Cambiar el secreto compromete la app comprometida.**
-
-El `.gitignore` actual ya excluye `.env` y archivos `.env.local`, mantenerlo así.
-
----
-
-## Comandos del proyecto
-
-> **Nota:** estos comandos asumen la estructura final del proyecto. Hoy las carpetas
-> backend/ y frontend/ están vacías. Cuando Diego inicialice el proyecto Spring Boot
-> y Joaquín el proyecto Vite, ajustar esta sección.
-
-```bash
-# Backend (desde backend/)
-./mvnw clean install                    # Build completo con tests
-./mvnw spring-boot:run                  # Levantar microservicio (dev)
-./mvnw test                             # Solo tests
-./mvnw test -Dtest=BudgetServiceTest    # Test de una clase específica
-
-# Frontend (desde frontend/)
-npm install                             # Instalar dependencias
-npm run dev                             # Dev server con hot reload (Vite)
-npm run build                           # Build de producción
-npm run preview                         # Preview del build de producción
-npm test                                # Tests con Vitest
-
-# Stack completo (cuando exista docker-compose.yml)
-docker-compose up -d                    # Levantar todo en background
-docker-compose logs -f auth             # Ver logs del microservicio auth
-docker-compose down                     # Detener todo
-```
-
----
-
-## Pull Requests
+## PARTE H — Pull Requests
 
 - **Una sola responsabilidad por PR.** Si toca más de 10 archivos, evalúa dividirlo.
 - **Descripción obligatoria:** qué cambió, por qué, cómo probarlo, capturas si aplica al frontend.
 - **Tests obligatorios** para nueva lógica de negocio (especialmente cálculos financieros).
-- **No mergear sin al menos una review aprobada** del owner técnico de la capa afectada.
-  - Cambios en `auth/`, `transactions/`, `budget/` → review de Diego.
-  - Cambios en `frontend/` → review de Joaquín.
+- **Review obligatoria del owner correspondiente:**
+  - Cambios en backend (`backend/src/main/java/com/finanzas/`) → review de Diego.
+  - Cambios en frontend (`frontend/`) → review de Joaquín.
   - Cambios en modelo de datos o reglas de negocio → review de Agustín.
-- **Squash & merge** para mantener historial limpio en `main`.
+- **Squash & merge** para mantener historial limpio en `master`.
+- **Antes de mergear:** actualizar `docs/progress/CHANGELOG.md` con un resumen del PR.
 
 ---
 
-## Métricas de calidad declaradas (del README)
+## PARTE I — Carpeta `docs/progress/` (memoria viva del proyecto)
 
-- Cobertura de código: **≥ 80%** (JUnit 5).
-- Precisión de cálculos presupuestarios: **100%** (sin tolerancia a errores de redondeo).
-- Seguridad: encriptación de contraseñas + validación de tokens JWT.
+**Esto es importante para Copilot en modo agente.** Después de cada iteración significativa, actualizar:
 
-Cuando Copilot sugiera código que pueda comprometer estas métricas (ej: lógica financiera sin test, endpoint sin validación de JWT), debe **señalarlo explícitamente** en la respuesta.
+| Archivo        | Contenido                                                                                                  | Cuándo actualizar                             |
+| -------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `STATUS.md`    | Estado vivo: qué existe, qué no, gaps por capa, cobertura tests, deuda técnica conocida                    | Cada PR que cambie funcionalidad o estructura |
+| `DECISIONS.md` | Decisiones arquitectónicas tomadas (ADRs ligeros): qué se decidió, alternativas consideradas, razón, fecha | Cuando se resuelve una decisión pendiente     |
+| `CHANGELOG.md` | Registro cronológico: fecha, autor, PR, qué cambió                                                         | Después de cada merge a `master`              |
 
----
-
-## Documentación de APIs
-
-- **OpenAPI/Swagger** configurado en `/swagger-ui.html` en cada microservicio.
-- Endpoints documentados con `@Operation` y `@ApiResponse` de springdoc.
-- El `openapi.json` generado se commitea en `docs/openapi-<microservicio>.json` para consumo del frontend.
+**Regla para Copilot:** al iniciar una nueva tarea, **leer primero `STATUS.md` y `DECISIONS.md`** para no asumir cosas falsas (ej: "ya hay JWT" cuando no lo hay). Después de implementar, **proponer al usuario actualizar los archivos correspondientes** antes de cerrar la iteración.
 
 ---
 
-## Estado actual del repositorio (snapshot mayo 2026)
+## PARTE J — Comandos del proyecto
 
-> Esta sección se actualiza cuando el estado cambia significativamente.
-> Hoy describe un repo en fase de inicialización.
+```bash
+# Backend (desde backend/)
+cd backend
+mvn -DskipTests package          # Build sin tests
+mvn spring-boot:run              # Levantar app en localhost:8080
+mvn test                         # Tests (cuando existan)
+mvn test -Dtest=ResumenServiceTest  # Test de una clase específica
 
-**Lo que existe:**
+# H2 console (con app corriendo)
+# http://localhost:8080/h2-console
+# JDBC URL: jdbc:h2:mem:finanzas_db
+# User: sa, Password: (vacío)
 
-- README.md con descripción y planificación.
-- `.gitignore` configurado para Java/Spring Boot, Node/React, IDEs, H2.
-- Estructura de carpetas: `backend/`, `frontend/`, `docs/` (todas con `.gitkeep`, vacías).
+# Frontend (cuando exista, desde frontend/)
+# Pendiente: definir comandos según stack elegido (ADR-006)
 
-**Lo que aún NO existe (y por tanto Copilot no debe asumir):**
+# Docker compose (actualmente desalineado con el código — ver STATUS.md)
+docker compose up -d
+docker compose down
+```
 
-- Proyecto Spring Boot generado (no hay `pom.xml`, ni `Application.java`, ni paquetes).
-- Proyecto React/Vite generado (no hay `package.json`, ni `vite.config.js`).
-- Modelo de datos implementado (existe diagrama en README pero no entidades JPA).
-- Decisiones de arquitectura mencionadas en sección "decisiones pendientes".
+---
 
-**Cuando Copilot reciba pedidos de generación de código que requieran estas piezas faltantes:**
+## Versionado de este archivo
 
-1. Pregúntar al usuario sobre las decisiones pendientes antes de generar.
-2. No asumir estructura de paquetes, dependencias específicas, o configuración de microservicios.
-3. Si genera código de scaffolding (primer commit de un microservicio), confirmar que el usuario quiere ese scaffolding específico.
+- **2026-05-07:** reescritura completa. Refleja estado real del repo (monolito en `com.finanzas`), agrega guidelines Karpathy, define convención `docs/progress/`, documenta decisiones pendientes incluyendo migración a microservicios pedida por el profesor. Backend reorganizado a la carpeta `backend/` (ver ADR-008).

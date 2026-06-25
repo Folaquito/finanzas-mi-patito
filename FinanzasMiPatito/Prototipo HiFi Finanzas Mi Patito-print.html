@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Prototipo HiFi — Finanzas Mi Patito (PDF)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0; background: #fafaf7;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page {
+      width: 1240px;
+      page-break-after: always;
+      break-after: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      margin: 0 auto 30px;
+      background: #fafaf7;
+    }
+    .page:last-child { page-break-after: auto; break-after: auto; }
+    .page-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #2d2a26;
+      padding: 8px 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: .6;
+    }
+    .browser-shell { width: 1240px; height: 820px; overflow: hidden; }
+    @keyframes patito-bob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+    .patito-bob { animation: none; }
+    @keyframes fade { from{opacity:0;} to{opacity:1;} }
+    @keyframes pop { 0%{opacity:0;transform:scale(.92);} 100%{opacity:1;transform:scale(1);} }
+    button { font-family: inherit; }
+    input { font-family: inherit; }
+    a { color: inherit; }
+
+    @page {
+      size: 1300px 900px;
+      margin: 0;
+    }
+    @media print {
+      html, body { background: #fafaf7 !important; }
+      .page { margin: 0 auto !important; }
+      .page-label { display: none; }
+      .browser-shell { box-shadow: none !important; }
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="browser-window.jsx"></script>
+<script type="text/babel" src="hifi/tokens.jsx"></script>
+<script type="text/babel" src="hifi/data.jsx"></script>
+<script type="text/babel" src="hifi/patito.jsx"></script>
+<script type="text/babel" src="hifi/shell.jsx"></script>
+<script type="text/babel" src="hifi/screens-public.jsx"></script>
+<script type="text/babel" src="hifi/screens-onboarding.jsx"></script>
+<script type="text/babel" src="hifi/screen-dashboard.jsx"></script>
+<script type="text/babel" src="hifi/screens-app.jsx"></script>
+
+<script type="text/babel">
+const URL_BY_PAGE = {
+  landing: 'mipatito.cl', login: 'mipatito.cl/entrar', register: 'mipatito.cl/registro',
+  onboarding: 'app.mipatito.cl/bienvenido',
+  dashboard: 'app.mipatito.cl/inicio',
+  movimientos: 'app.mipatito.cl/movimientos',
+  presupuesto: 'app.mipatito.cl/presupuesto',
+  metas: 'app.mipatito.cl/metas',
+  educacion: 'app.mipatito.cl/aprende',
+  perfil: 'app.mipatito.cl/perfil',
+};
+
+const SCREEN_LABELS = {
+  landing: '01 Landing', login: '02 Login', register: '03 Registro',
+  onboarding: '04 Onboarding', dashboard: '05 Dashboard',
+  movimientos: '06 Movimientos', presupuesto: '07 Presupuesto',
+  metas: '08 Metas', educacion: '09 Educación', perfil: '10 Perfil',
+};
+
+const noop = () => {};
+
+function PrintAll() {
+  const screens = [
+    { key: 'landing',     el: <Landing     go={noop}/> },
+    { key: 'login',       el: <Login       go={noop}/> },
+    { key: 'register',    el: <Register    go={noop}/> },
+    { key: 'onboarding',  el: <Onboarding  go={noop}/> },
+    { key: 'dashboard',   el: <Dashboard   go={noop} openTx={noop}/> },
+    { key: 'movimientos', el: <Movimientos go={noop} openTx={noop}/> },
+    { key: 'presupuesto', el: <Presupuesto go={noop}/> },
+    { key: 'metas',       el: <Metas       go={noop}/> },
+    { key: 'educacion',   el: <Educacion   go={noop}/> },
+    { key: 'perfil',      el: <Perfil      go={noop}/> },
+  ];
+  return (
+    <div>
+      {screens.map(s => (
+        <div className="page" key={s.key} data-screen-label={SCREEN_LABELS[s.key]}>
+          <div className="page-label">{SCREEN_LABELS[s.key]}</div>
+          <div className="browser-shell">
+            <ChromeWindow width={1240} height={820}
+              tabs={[{ title: 'Finanzas Mi Patito 🐣' }]}
+              url={URL_BY_PAGE[s.key]}>
+              <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+                {s.el}
+              </div>
+            </ChromeWindow>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PrintAll/>);
+
+// Auto-print after fonts and JSX have rendered
+(async () => {
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch {}
+  // Wait a beat for React render + Babel transforms
+  await new Promise(r => setTimeout(r, 1200));
+  window.print();
+})();
+</script>
+</body>
+</html>

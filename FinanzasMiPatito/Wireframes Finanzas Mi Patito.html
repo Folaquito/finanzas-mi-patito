@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Wireframes — Finanzas Mi Patito</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 27px, #eee 27px 28px),
+        #FAFAF7;
+      font-family: 'Kalam', cursive;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+    .header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header h1 {
+      font-family: 'Caveat', cursive;
+      font-size: 44px;
+      margin: 0;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .header p {
+      font-size: 14px;
+      color: #555;
+      margin: 4px 0 0;
+      max-width: 560px;
+    }
+    .meta {
+      font-family: 'Caveat', cursive;
+      font-size: 20px;
+      color: #888;
+      text-align: right;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      align-items: flex-end;
+    }
+    .tab {
+      border: 2px solid #1a1a1a;
+      background: #fff;
+      padding: 8px 18px;
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      border-bottom: none;
+      position: relative;
+      top: 2px;
+      box-shadow: 2px -2px 0 #1a1a1a;
+      transition: all 0.15s;
+    }
+    .tab.active {
+      background: #FFD23F;
+      top: 0;
+      padding-bottom: 10px;
+    }
+    .tab:hover:not(.active) { background: #fff8d8; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .variant {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .variant-label {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .variant-label .num {
+      font-family: 'Caveat', cursive;
+      font-size: 32px;
+      font-weight: 700;
+      background: #FFD23F;
+      border: 2px solid #1a1a1a;
+      padding: 0 10px;
+      display: inline-block;
+      line-height: 1.1;
+      transform: rotate(-2deg);
+      box-shadow: 2px 2px 0 #1a1a1a;
+    }
+    .variant-label .name {
+      font-family: 'Caveat', cursive;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .variant-label .desc {
+      font-family: 'Kalam', cursive;
+      font-size: 12px;
+      color: #777;
+      margin-left: 6px;
+    }
+    .browser-wrap {
+      transform-origin: top left;
+    }
+    /* Tweaks panel */
+    .tweaks {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 4px 4px 0 #1a1a1a;
+      font-family: 'Kalam', cursive;
+      font-size: 13px;
+      display: none;
+      z-index: 999;
+      min-width: 220px;
+    }
+    .tweaks.on { display: block; }
+    .tweaks h3 {
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+    .tweaks label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      gap: 10px;
+    }
+    .tweaks select, .tweaks input[type="range"] {
+      font-family: 'Kalam', cursive;
+      font-size: 12px;
+    }
+    .legend {
+      font-family: 'Caveat', cursive;
+      font-size: 18px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div id="root"></div>
+
+<div class="tweaks" id="tweaks">
+  <h3>Tweaks</h3>
+  <label>
+    <span>Acento</span>
+    <select id="tw-accent">
+      <option value="#FFD23F">Amarillo patito</option>
+      <option value="#FF8A3D">Naranja</option>
+      <option value="#8bd0c4">Menta</option>
+      <option value="#ea5a5a">Rojo coral</option>
+      <option value="none">Puro B&amp;N</option>
+    </select>
+  </label>
+  <label>
+    <span>Papel</span>
+    <select id="tw-paper">
+      <option value="grid">Cuadriculado</option>
+      <option value="lines">Líneas</option>
+      <option value="plain">Liso</option>
+    </select>
+  </label>
+  <label>
+    <span>Zoom</span>
+    <input id="tw-zoom" type="range" min="0.5" max="1" step="0.05" value="0.72"/>
+  </label>
+  <label>
+    <span>Trazo sketchy</span>
+    <input id="tw-sketchy" type="checkbox" checked/>
+  </label>
+</div>
+
+<script>
+  // EDITMODE defaults
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "accent": "#FF8A3D",
+    "paper": "plain",
+    "zoom": 1,
+    "sketchy": true
+  }/*EDITMODE-END*/;
+  window.__TWEAKS = { ...TWEAK_DEFAULTS };
+</script>
+
+<script type="text/babel" src="landing-variants.jsx"></script>
+<script type="text/babel" src="dashboard-variants.jsx"></script>
+<script type="text/babel" src="browser-window.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const LANDINGS = [
+  { Comp: LandingV1, name: 'Hero dividido',   desc: 'duck + form a la derecha' },
+  { Comp: LandingV2, name: '50/30/20 como manifiesto', desc: 'centrado, regla como tipografía' },
+  { Comp: LandingV3, name: 'Tarjetas de roles',  desc: 'la plata tiene 3 trabajos' },
+  { Comp: LandingV4, name: 'Adopta tu huevito', desc: 'evolución del patito de entrada' },
+];
+
+const DASHBOARDS = [
+  { Comp: DashboardV1, name: 'Clásico',         desc: 'dona + asignaciones + txns' },
+  { Comp: DashboardV2, name: 'Patito protagonista', desc: 'mascota XL + stats' },
+  { Comp: DashboardV3, name: 'Data-denso',       desc: 'KPIs, 50/30/20 y proyección' },
+  { Comp: DashboardV4, name: 'Pregunta del día', desc: 'conversacional, una tarea' },
+];
+
+function loadTab() {
+  try { return localStorage.getItem('fmp_wf_tab') || 'landing'; } catch { return 'landing'; }
+}
+
+function App() {
+  const [tab, setTab] = useState(loadTab());
+  const [zoom, setZoom] = useState(window.__TWEAKS.zoom);
+
+  useEffect(() => { try { localStorage.setItem('fmp_wf_tab', tab); } catch {} }, [tab]);
+
+  useEffect(() => {
+    // Tweaks wiring
+    const accent = document.getElementById('tw-accent');
+    const paper  = document.getElementById('tw-paper');
+    const zoomEl = document.getElementById('tw-zoom');
+    const sketchy= document.getElementById('tw-sketchy');
+
+    const applyAccent = (v) => {
+      document.documentElement.style.setProperty('--duck', v === 'none' ? '#e0e0e0' : v);
+      document.querySelectorAll('.tab.active').forEach(el => el.style.background = v === 'none' ? '#e0e0e0' : v);
+      // live swap: rewrite all backgrounds that match the default
+      const nodes = document.querySelectorAll('[data-duck]');
+      nodes.forEach(n => n.style.background = v === 'none' ? '#e0e0e0' : v);
+    };
+    const applyPaper = (v) => {
+      document.body.style.background =
+        v === 'grid'  ? 'repeating-linear-gradient(0deg, transparent 0 27px, #eee 27px 28px), repeating-linear-gradient(90deg, transparent 0 27px, #eee 27px 28px), #FAFAF7' :
+        v === 'lines' ? 'repeating-linear-gradient(0deg, transparent 0 27px, #eee 27px 28px), #FAFAF7' :
+        '#FAFAF7';
+    };
+    const applyZoom = (v) => setZoom(parseFloat(v));
+
+    accent.value = window.__TWEAKS.accent; applyAccent(accent.value);
+    paper.value = window.__TWEAKS.paper;  applyPaper(paper.value);
+    zoomEl.value = window.__TWEAKS.zoom;  applyZoom(zoomEl.value);
+    sketchy.checked = window.__TWEAKS.sketchy;
+
+    accent.addEventListener('change', e => {
+      applyAccent(e.target.value);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accent: e.target.value } }, '*');
+    });
+    paper.addEventListener('change', e => {
+      applyPaper(e.target.value);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { paper: e.target.value } }, '*');
+    });
+    zoomEl.addEventListener('input', e => applyZoom(e.target.value));
+    zoomEl.addEventListener('change', e => {
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { zoom: parseFloat(e.target.value) } }, '*');
+    });
+
+    // Edit-mode protocol
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') document.getElementById('tweaks').classList.add('on');
+      if (e.data?.type === '__deactivate_edit_mode') document.getElementById('tweaks').classList.remove('on');
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const variants = tab === 'landing' ? LANDINGS : DASHBOARDS;
+  const w = 900, h = 560;
+
+  return (
+    <div className="app" data-screen-label={tab === 'landing' ? '01 Landing' : '02 Dashboard'}>
+      <div className="header">
+        <div>
+          <h1>Finanzas Mi Patito 🐣 — wireframes</h1>
+          <p>4 variantes por pantalla. Cada una explora un tratamiento distinto de layout, jerarquía y protagonismo del patito. Cambia pestañas para alternar pantallas.</p>
+        </div>
+        <div className="meta">
+          ronda 1 · abril 2026<br/>
+          <span style={{fontSize: 14}}>layout · jerarquía · mascota · densidad</span>
+        </div>
+      </div>
+
+      <div className="tabs" role="tablist">
+        <button className={'tab' + (tab === 'landing' ? ' active' : '')}
+          onClick={() => setTab('landing')}>01 · Landing / Login</button>
+        <button className={'tab' + (tab === 'dashboard' ? ' active' : '')}
+          onClick={() => setTab('dashboard')}>02 · Dashboard 50/30/20</button>
+      </div>
+
+      <div className="legend">
+        {tab === 'landing'
+          ? 'primera impresión + entrada a la app →'
+          : 'el centro de comando del usuario: qué está pasando este mes →'}
+      </div>
+
+      <div className="grid">
+        {variants.map((v, i) => (
+          <div className="variant" key={tab + i}>
+            <div className="variant-label">
+              <span className="num">V{i+1}</span>
+              <span className="name">{v.name}</span>
+              <span className="desc">— {v.desc}</span>
+            </div>
+            <div className="browser-wrap" style={{
+              transform: `scale(${zoom})`,
+              width: w * zoom,
+              height: h * zoom,
+            }}>
+              <ChromeWindow
+                width={w}
+                height={h}
+                tabs={[{ title: 'Finanzas Mi Patito' }]}
+                url={tab === 'landing' ? 'mipatito.cl' : 'app.mipatito.cl/inicio'}
+              >
+                <v.Comp/>
+              </ChromeWindow>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        marginTop: 40, padding: 20, border: '2px dashed #c9c9c4',
+        borderRadius: 8, background: '#fff',
+      }}>
+        <div style={{ fontFamily: 'Caveat', fontSize: 26, fontWeight: 700, marginBottom: 6 }}>
+          Próximos pasos →
+        </div>
+        <ul style={{ fontFamily: 'Kalam', fontSize: 14, color: '#444', margin: 0, paddingLeft: 20, lineHeight: 1.7 }}>
+          <li>Cuéntame cuáles variantes te gustaron y qué mezclarías (ej. "landing V2 + dashboard V4")</li>
+          <li>Podemos refinar 1–2 favoritas a hi-fi con un design system real</li>
+          <li>Sumar pantallas faltantes: onboarding, movimientos, presupuesto, metas, educación</li>
+          <li>Definir paleta final del patito (¿amarillo cálido? ¿acento secundario?)</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+</body>
+</html>

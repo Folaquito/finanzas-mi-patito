@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Prototipo HiFi — Finanzas Mi Patito</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    html, body {
+      margin: 0; padding: 0; background: #0f1115; min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    #root { min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px 60px; }
+    .browser-wrap { width: 100%; max-width: 1280px; }
+    @keyframes patito-bob {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .patito-bob { animation: patito-bob 2.4s ease-in-out infinite; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop { 0% { opacity: 0; transform: scale(.92); } 100% { opacity: 1; transform: scale(1); } }
+    button { font-family: inherit; }
+    input { font-family: inherit; }
+    a { color: inherit; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="browser-window.jsx"></script>
+<script type="text/babel" src="hifi/tokens.jsx"></script>
+<script type="text/babel" src="hifi/data.jsx"></script>
+<script type="text/babel" src="hifi/patito.jsx"></script>
+<script type="text/babel" src="hifi/shell.jsx"></script>
+<script type="text/babel" src="hifi/screens-public.jsx"></script>
+<script type="text/babel" src="hifi/screens-onboarding.jsx"></script>
+<script type="text/babel" src="hifi/screen-dashboard.jsx"></script>
+<script type="text/babel" src="hifi/screens-app.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const PUBLIC = ['landing', 'login', 'register', 'onboarding'];
+const URL_BY_PAGE = {
+  landing: 'mipatito.cl', login: 'mipatito.cl/entrar', register: 'mipatito.cl/registro',
+  onboarding: 'app.mipatito.cl/bienvenido',
+  dashboard: 'app.mipatito.cl/inicio',
+  movimientos: 'app.mipatito.cl/movimientos',
+  presupuesto: 'app.mipatito.cl/presupuesto',
+  metas: 'app.mipatito.cl/metas',
+  educacion: 'app.mipatito.cl/aprende',
+  perfil: 'app.mipatito.cl/perfil',
+};
+
+const SCREENS = {
+  landing: 'landing', login: 'login', register: 'register', onboarding: 'onboarding',
+  dashboard: 'dashboard', movimientos: 'movimientos', presupuesto: 'presupuesto',
+  metas: 'metas', educacion: 'educacion', perfil: 'perfil',
+};
+
+const SCREEN_LABELS = {
+  landing: '01 Landing', login: '02 Login', register: '03 Registro',
+  onboarding: '04 Onboarding', dashboard: '05 Dashboard',
+  movimientos: '06 Movimientos', presupuesto: '07 Presupuesto',
+  metas: '08 Metas', educacion: '09 Educación', perfil: '10 Perfil',
+};
+
+function loadPage() {
+  try { return localStorage.getItem('fmp_hifi_page') || 'landing'; } catch { return 'landing'; }
+}
+
+function App() {
+  const [page, setPage] = useState(loadPage());
+  const [tx, setTx] = useState(null);
+  useEffect(() => { try { localStorage.setItem('fmp_hifi_page', page); } catch {} }, [page]);
+
+  const go = (p) => setPage(p);
+  const openTx = (t) => setTx(t);
+
+  let ScreenEl;
+  switch (page) {
+    case 'landing':     ScreenEl = <Landing     go={go}/>; break;
+    case 'login':       ScreenEl = <Login       go={go}/>; break;
+    case 'register':    ScreenEl = <Register    go={go}/>; break;
+    case 'onboarding':  ScreenEl = <Onboarding  go={go}/>; break;
+    case 'dashboard':   ScreenEl = <Dashboard   go={go} openTx={openTx}/>; break;
+    case 'movimientos': ScreenEl = <Movimientos go={go} openTx={openTx}/>; break;
+    case 'presupuesto': ScreenEl = <Presupuesto go={go}/>; break;
+    case 'metas':       ScreenEl = <Metas       go={go}/>; break;
+    case 'educacion':   ScreenEl = <Educacion   go={go}/>; break;
+    case 'perfil':      ScreenEl = <Perfil      go={go}/>; break;
+    default:            ScreenEl = <Landing     go={go}/>;
+  }
+
+  // Public pages: full bleed inside browser
+  // App pages: also full bleed (Shell handles its own layout)
+  const w = 1240, h = 820;
+
+  return (
+    <div className="browser-wrap" data-screen-label={SCREEN_LABELS[page]}>
+      {/* Quick screen jumper */}
+      <div style={{
+        display: 'flex', gap: 6, flexWrap: 'wrap', padding: '0 4px 14px',
+        fontFamily: 'Plus Jakarta Sans', fontSize: 12,
+      }}>
+        <span style={{ color: '#fafaf7', opacity: .55, padding: '6px 10px', fontWeight: 600 }}>Saltar a:</span>
+        {Object.entries(SCREEN_LABELS).map(([k, v]) => (
+          <button key={k} onClick={() => go(k)} style={{
+            padding: '6px 10px', borderRadius: 999, border: 'none',
+            background: page === k ? '#FFB800' : 'rgba(255,255,255,.08)',
+            color: page === k ? '#2d2a26' : '#fafaf7',
+            fontWeight: 600, fontSize: 11, cursor: 'pointer',
+          }}>{v}</button>
+        ))}
+      </div>
+
+      <ChromeWindow width={w} height={h}
+        tabs={[{ title: 'Finanzas Mi Patito 🐣' }]}
+        url={URL_BY_PAGE[page]}>
+        <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+          {ScreenEl}
+        </div>
+      </ChromeWindow>
+
+      <TxModal tx={tx} onClose={() => setTx(null)}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
