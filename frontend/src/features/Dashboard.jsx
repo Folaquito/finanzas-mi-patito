@@ -3,16 +3,9 @@ import { getCuentasByUsuario, getResumen, getTransaccionesByCuenta } from '../ap
 import Icon from '../components/Icon';
 import Shell from '../components/Shell';
 import { Button, Card, Pill } from '../components/ui';
+import { useAuth } from '../context/auth-context';
 import { formatCLP, formatShortCLP, formatShortDate, toNumber } from '../utils/format';
-
-const USER_ID = 1;
-
-const DEFAULT_USER = {
-  nombre: 'Admin',
-  initials: 'AD',
-  duckStage: 2,
-  duckProgress: 28,
-};
+import { toShellUser } from '../utils/user';
 
 const CATEGORY_LABELS = {
   NECESIDAD: 'Necesidades',
@@ -63,7 +56,8 @@ function sortByFechaDesc(transacciones) {
   });
 }
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigate }) {
+  const { user } = useAuth();
   const [state, setState] = useState({
     loading: true,
     error: null,
@@ -77,8 +71,8 @@ export default function Dashboard() {
 
     const load = async () => {
       try {
-        const resumen = await getResumen(USER_ID).catch(() => null);
-        const cuentas = await getCuentasByUsuario(USER_ID).catch(() => []);
+        const resumen = await getResumen(user.id).catch(() => null);
+        const cuentas = await getCuentasByUsuario(user.id).catch(() => []);
         const transaccionesByCuenta = await Promise.all(
           cuentas.map((cuenta) => getTransaccionesByCuenta(cuenta.id).catch(() => []))
         );
@@ -109,7 +103,7 @@ export default function Dashboard() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [user.id]);
 
   const computed = useMemo(() => {
     const ingresos =
@@ -150,9 +144,10 @@ export default function Dashboard() {
   return (
     <Shell
       active="dashboard"
-      user={DEFAULT_USER}
-      title="Hola, Admin"
+      user={toShellUser(user)}
+      title={`Hola, ${user.nombre?.split(' ')[0] || ''}`}
       subtitle="Resumen del mes"
+      onNavigate={onNavigate}
       action={
         <Button variant="dark" size="sm" icon={<Icon name="plus" size={16} />}>
           Movimiento

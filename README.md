@@ -1,6 +1,10 @@
 # Finanzas Mi Patito 🐣
 
-Aplicación web de gestión de finanzas personales con implementación automática de la regla **50/30/20** y proyecciones de ahorro.
+Aplicación web de **finanzas personales** que ordena tus ingresos con la regla **50/30/20** (50% necesidades, 30% deseos, 20% ahorro) y te ayuda a visualizar tu flujo del mes con la ayuda de tu patito.
+
+![Login](docs/img/login.png)
+
+---
 
 ## Integrantes
 
@@ -10,22 +14,28 @@ Aplicación web de gestión de finanzas personales con implementación automáti
 | Joaquín Fernández | Frontend Developer (React) | [@Folaquito](https://github.com/Folaquito) |
 | Diego Bahamondez | Backend Developer (Spring Boot) | [@Eth3rn4l](https://github.com/Eth3rn4l) |
 
-**Profesor:** Diego Patricio Cares Gonzalez  
-**Asignatura:** Taller Aplicado de Programación 801D — Duoc UC  
-**Año:** 2026
+**Profesor:** Diego Patricio Cares Gonzalez
+**Asignatura:** Taller Aplicado de Programación 801D — Duoc UC · 2026
 
 ---
 
-## Descripción
+## Características
 
-Finanzas Mi Patito es una plataforma web que transforma la relación del usuario con su dinero mediante educación financiera activa y automatización de presupuestos.
+- 🔐 **Autenticación**: registro, inicio de sesión, recuperación y cambio de contraseña (contraseñas cifradas con BCrypt).
+- 💸 **Gestión financiera**: cuentas, categorías, transacciones (ingresos/gastos) y metas de ahorro (CRUD completo).
+- 📊 **Regla 50/30/20**: distribuye automáticamente tus ingresos en Necesidades / Deseos / Ahorro y compara contra el gasto real, avisando cuando te excedes.
+- 📈 **Dashboard**: balance del mes, ingresos vs. gastos y últimos movimientos.
+- 🐤 **Patito**: una mascota que acompaña la experiencia y crece contigo.
 
-**Funcionalidades clave:**
-- Centralización de movimientos bancarios (historial consolidado)
-- Presupuestado inteligente con regla 50/30/20 y Presupuesto Base Cero
-- Proyecciones financieras con gráficos de crecimiento patrimonial
+> **Fuera de alcance:** integración real con APIs bancarias (se usan datos simulados), versión móvil nativa.
 
-**Fuera de alcance:** integración real con APIs bancarias (se usan datos simulados o CSV), versión móvil nativa.
+---
+
+## Capturas
+
+| Dashboard | Presupuesto 50/30/20 |
+|-----------|----------------------|
+| ![Dashboard](docs/img/dashboard.png) | ![Presupuesto](docs/img/presupuesto.png) |
 
 ---
 
@@ -33,92 +43,121 @@ Finanzas Mi Patito es una plataforma web que transforma la relación del usuario
 
 | Capa | Tecnología |
 |------|-----------|
-| Frontend | React (SPA) |
-| Backend | Java 21 + Spring Boot (microservicios) |
-| Base de datos | H2 (desarrollo) / PostgreSQL (producción) |
-| Testing | JUnit 5 + Mockito |
+| Frontend | React 19 + Vite 8 (SPA, Context API) |
+| Backend | Java 21 + Spring Boot 3.5.14 (REST API) |
+| Persistencia | Spring Data JPA + H2 (desarrollo) · PostgreSQL (objetivo producción) |
+| Seguridad | Spring Security + BCrypt |
+| Build | Maven (backend) · npm (frontend) |
 | Control de versiones | Git + GitHub |
 
 ---
 
 ## Arquitectura
 
-Arquitectura de **microservicios desacoplada** en 3 capas:
+Monolito Spring Boot organizado por capas, consumido por una SPA de React:
 
 ```
-┌─────────────────────────────────┐
-│   Capa de Presentación          │
-│   React SPA  ──►  REST API      │
-└────────────────┬────────────────┘
-                 │
-┌────────────────▼────────────────┐
-│   Capa de Negocio               │
-│   Spring Boot Microservicios    │
-│   (lógica 50/30/20, auth JWT)   │
-└────────────────┬────────────────┘
-                 │
-┌────────────────▼────────────────┐
-│   Capa de Datos                 │
-│   Spring Data JPA  ──►  H2/SQL  │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│  Frontend — React SPA (Vite)         │
+│  context · features · api (fetch)    │
+└───────────────────┬──────────────────┘
+                    │  REST /api (proxy Vite → :8080)
+┌───────────────────▼──────────────────┐
+│  Backend — Spring Boot               │
+│  controller → service → repository   │
+│  (lógica 50/30/20, auth, BCrypt)     │
+└───────────────────┬──────────────────┘
+                    │  Spring Data JPA
+┌───────────────────▼──────────────────┐
+│  Base de datos — H2 (dev) / Postgres │
+└──────────────────────────────────────┘
 ```
+
+> **Nota de arquitectura:** el diseño original contemplaba microservicios; la implementación actual es un **monolito modular** por capas (más simple de operar y desplegar para el alcance del curso). La separación en servicios queda como evolución futura.
 
 ---
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
 finanzas-mi-patito/
-├── frontend/          # React SPA
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── services/  # Clientes REST
-│   └── package.json
-├── backend/           # Spring Boot
-│   ├── src/main/java/
-│   │   └── cl/duoc/finanzas/
-│   │       ├── auth/          # Microservicio de autenticación
-│   │       ├── transactions/  # Microservicio de transacciones
-│   │       └── budget/        # Microservicio de presupuestos
+├── backend/                 # API Spring Boot
+│   ├── src/main/java/com/finanzas/
+│   │   ├── config/          # SecurityConfig, DataLoader (seed)
+│   │   ├── controller/      # REST controllers (/api/...)
+│   │   ├── service/ + impl/  # Lógica de negocio (incl. 50/30/20)
+│   │   ├── repository/      # Spring Data JPA
+│   │   ├── model/           # Entidades + enums
+│   │   ├── dto/             # Objetos de transferencia
+│   │   └── exception/       # Manejo global de errores
 │   └── pom.xml
-└── docs/              # Documentación y diagramas
+├── frontend/                # SPA React + Vite
+│   └── src/
+│       ├── api/             # Cliente REST
+│       ├── context/         # AuthContext (sesión)
+│       ├── components/      # Shell, ui, Patito, Icon
+│       ├── features/        # Login, Dashboard, Presupuesto, Perfil
+│       └── utils/           # Formato CLP, helpers
+├── docs/                    # Documentación, diagramas y capturas
+└── README.md
 ```
 
----
-
-## Metodología
-
-**Scrum** con sprints semanales:
-
-- Sprint Planning: inicio de cada semana
-- Daily Sync: revisión breve de bloqueos
-- Sprint Review: viernes, revisión de entregables
-- Tablero Kanban: [Trello — Finanzas Mi Patito](#) *(link pendiente)*
+Cada módulo tiene su propio README con instrucciones detalladas:
+[`backend/readme.md`](backend/readme.md) · [`frontend/README.md`](frontend/README.md)
 
 ---
 
-## Planificación
+## Puesta en marcha
 
-| Fase | Actividad | Duración |
-|------|-----------|----------|
-| Análisis | Levantamiento de requerimientos y diseño de BD | 1 semana |
-| Diseño | Wireframes (UI) y diagramas de arquitectura | 1 semana |
-| Backend | Microservicios Spring Boot + persistencia H2 | 3 semanas |
-| Frontend | Interfaz React + consumo de APIs | 3 semanas |
-| Pruebas y QA | JUnit/Mockito + corrección de errores | 1 semana |
-| Cierre | Documentación final + demo | 1 semana |
+**Requisitos:** Java 21, Maven 3.6+, Node.js 22+.
+
+### 1. Backend (puerto 8080)
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+Al arrancar, se crea un usuario de prueba (seed):
+
+- **Correo:** `admin@patito.com`
+- **Contraseña:** `password`
+
+Consola H2: http://localhost:8080/h2-console (JDBC: `jdbc:h2:mem:finanzas_db`).
+
+### 2. Frontend (puerto 5173)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Abre http://localhost:5173. El dev server hace proxy de `/api` hacia el backend en `:8080`, así que basta con tener ambos corriendo.
 
 ---
 
-## Métricas de Calidad
+## Modelo de datos
 
-- Cobertura de código: **≥ 80%** (JUnit 5)
-- Precisión de cálculos presupuestarios: **100%**
-- Seguridad: encriptación de contraseñas + validación de tokens JWT
+| Entidad | Descripción |
+|---------|-------------|
+| `Usuario` | Cuenta de la persona (email único, password BCrypt) |
+| `Cuenta` | Cuentas del usuario (saldo en CLP) |
+| `Categoria` | Catálogo con tipo `NECESIDAD` / `DESEO` / `AHORRO` |
+| `Transaccion` | Ingreso o gasto asociado a una cuenta y categoría |
+| `Meta` | Objetivo de ahorro con monto y fecha límite |
+
+<img width="533" alt="Modelo de base de datos" src="https://github.com/user-attachments/assets/51f6342c-2443-411a-be95-8af6bd2a4502" />
 
 ---
 
-Última actualización: 2026-04-30
-## Modelo Base de Datos
-<img width="533" height="525" alt="image" src="https://github.com/user-attachments/assets/51f6342c-2443-411a-be95-8af6bd2a4502" />
+## Metodología y métricas
+
+- **Scrum** con sprints semanales (planning, sync, review).
+- **Conventional Commits** en español (`feat:`, `fix:`, `docs:`…).
+- **Moneda:** siempre `BigDecimal` en CLP sin decimales.
+- **Objetivo de calidad:** cobertura de pruebas ≥ 80% (en progreso para EP3) y precisión 100% en los cálculos 50/30/20.
+
+---
+
+Última actualización: 2026-06-25

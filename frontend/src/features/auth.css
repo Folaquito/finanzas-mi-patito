@@ -1,0 +1,160 @@
+.auth {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: stretch;
+}
+
+.auth__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  text-align: center;
+}
+
+.auth__hero-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.auth__hero-text {
+  max-width: 320px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.auth__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px;
+}
+
+.auth__form {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  animation: pop-in 0.25s ease;
+}
+
+.auth__title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.auth__sub {
+  color: var(--muted);
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field__input {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 15px;
+  background: var(--bg);
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--duck);
+  box-shadow: 0 0 0 3px var(--duck-soft);
+}
+
+.auth__links {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.auth__token {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  word-break: break-all;
+  background: var(--bg);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--ink-soft);
+}
+
+.auth__msg {
+  max-width: 360px;
+  margin: 14px auto 0;
+  width: 100%;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth__msg--error {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.auth__msg--ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+/* Variante de botón "duck" (sólo existía pill--duck en App.css) */
+.btn--duck {
+  background: var(--duck);
+  color: var(--ink);
+  border: none;
+  box-shadow: var(--shadow-duck);
+}
+
+.btn--duck:hover {
+  background: var(--duck-dark);
+}
+
+.btn--duck:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 860px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+  .auth__hero {
+    padding: 32px 24px 0;
+  }
+  .auth__card {
+    padding: 24px;
+  }
+}

@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { id: 'perfil', label: 'Perfil', icon: 'user' },
 ];
 
-function Sidebar({ active, user }) {
+function Sidebar({ active, user, onNavigate }) {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -29,6 +29,7 @@ function Sidebar({ active, user }) {
             type="button"
             className={`sidebar__link ${active === item.id ? 'is-active' : ''}`}
             aria-current={active === item.id ? 'page' : undefined}
+            onClick={() => onNavigate?.(item.id)}
           >
             <Icon name={item.icon} size={18} />
             {item.label}
@@ -55,7 +56,7 @@ function Sidebar({ active, user }) {
   );
 }
 
-function TopBar({ title, subtitle, action, user }) {
+function TopBar({ title, subtitle, action, user, onNavigate }) {
   return (
     <div className="topbar">
       <div>
@@ -68,18 +69,24 @@ function TopBar({ title, subtitle, action, user }) {
           <Icon name="bell" size={18} />
           <span className="topbar__dot" />
         </button>
-        <div className="topbar__avatar">{user.initials}</div>
+        <div
+          className="topbar__avatar"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onNavigate?.('perfil')}
+        >
+          {user.initials}
+        </div>
       </div>
     </div>
   );
 }
 
-export default function Shell({ active = 'dashboard', user, title, subtitle, action, children }) {
+export default function Shell({ active = 'dashboard', user, title, subtitle, action, children, onNavigate }) {
   return (
     <div className="shell">
-      <Sidebar active={active} user={user} />
+      <Sidebar active={active} user={user} onNavigate={onNavigate} />
       <div className="shell__main">
-        <TopBar title={title} subtitle={subtitle} action={action} user={user} />
+        <TopBar title={title} subtitle={subtitle} action={action} user={user} onNavigate={onNavigate} />
         <div className="shell__content">
           <div className="mobile-nav">
             {NAV_ITEMS.map((item) => (
@@ -88,6 +95,7 @@ export default function Shell({ active = 'dashboard', user, title, subtitle, act
                 type="button"
                 className={`mobile-nav__item ${active === item.id ? 'is-active' : ''}`}
                 aria-current={active === item.id ? 'page' : undefined}
+                onClick={() => onNavigate?.(item.id)}
               >
                 <Icon name={item.icon} size={16} />
                 <span>{item.label}</span>
