@@ -1,0 +1,102 @@
+.presupuesto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.presupuesto__total {
+  padding: 22px;
+}
+
+.presupuesto__total-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.presupuesto__total-value {
+  font-size: 32px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.presupuesto__total-hint {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.presupuesto__lines {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.budget-line {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.budget-line__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.budget-line__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.budget-line__pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.budget-line__bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.budget-line__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.budget-line__fill--necesidad {
+  background: var(--ink);
+}
+
+.budget-line__fill--deseo {
+  background: var(--orange);
+}
+
+.budget-line__fill--ahorro {
+  background: var(--duck);
+}
+
+.budget-line__fill.is-over {
+  background: var(--red);
+}
+
+.budget-line__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.budget-line__avail.is-over {
+  color: var(--red);
+}
