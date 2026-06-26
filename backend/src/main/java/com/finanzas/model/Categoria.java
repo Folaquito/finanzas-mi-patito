@@ -1,10 +1,12 @@
 package com.finanzas.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "categorias")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
