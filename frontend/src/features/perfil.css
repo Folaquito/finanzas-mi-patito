@@ -1,0 +1,67 @@
+.perfil {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.perfil__info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.perfil__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perfil__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+.perfil__value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.perfil__form-card {
+  padding: 20px;
+}
+
+.perfil__form-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+
+/* El formulario reusa .auth__form pero sin la tarjeta anidada */
+.perfil__form {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: none;
+  margin: 0;
+  animation: none;
+}
+
+.perfil__logout {
+  margin-top: 4px;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid var(--red-soft);
+}
+
+.btn--ghost:hover {
+  background: var(--red-soft);
+}
