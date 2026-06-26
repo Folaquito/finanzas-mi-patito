@@ -32,6 +32,12 @@ public class Usuario {
     @NotNull
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    @JsonIgnore
+    private String resetToken;
+
+    @JsonIgnore
+    private LocalDateTime resetTokenExpiracion;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Cuenta> cuentas = new ArrayList<>();
@@ -53,6 +59,10 @@ public class Usuario {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+    public LocalDateTime getResetTokenExpiracion() { return resetTokenExpiracion; }
+    public void setResetTokenExpiracion(LocalDateTime resetTokenExpiracion) { this.resetTokenExpiracion = resetTokenExpiracion; }
     public List<Cuenta> getCuentas() { return cuentas; }
     public void setCuentas(List<Cuenta> cuentas) { this.cuentas = cuentas; }
     public List<Meta> getMetas() { return metas; }
