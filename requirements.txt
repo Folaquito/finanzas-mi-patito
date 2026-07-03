@@ -1,0 +1,6 @@
+# Herramientas Python para leer cartolas bancarias (.xls / .xlsx).
+# El producto (backend Java + frontend React) NO usa Python en runtime;
+# este entorno es un respaldo para la demo: permite leer y validar la
+# cartola de forma independiente si el stack completo no estuviera disponible.
+xlrd==2.0.1
+openpyxl==3.1.5
